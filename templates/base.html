@@ -11,7 +11,7 @@
 <style>
 
 
-.container {
+.custom-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -49,13 +49,7 @@
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <body>
-<div class="container">
-    <div class="image_container">
-        <img src="static/ConejoFreeClinicLogo.png" alt="Logo" class="img-fluid">
-    </div>
-    <div class="form_container">
-        {{ render_form(form) }}
-    </div>
-</div>
+{% block content %}
+{% endblock %}
 </body>
 </html>
