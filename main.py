@@ -1,79 +1,48 @@
 from datetime import date
-from flask import Flask, abort, render_template, redirect, url_for, flash
+from flask import Flask, abort, render_template, redirect, url_for, flash, request
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Text
 from werkzeug.security import generate_password_hash, check_password_hash
-from wtforms.fields import PasswordField, SubmitField, StringField, IntegerField
-from wtforms.fields.choices import SelectField
-from wtforms.fields.simple import BooleanField
-from wtforms.validators import DataRequired
 
+from forms import LoginForm, SubmissionForm
+
+class Base(DeclarativeBase):
+    pass
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'safjsafasfjks'
-ckeditor = CKEditor(app)
+with open('csrfkey.txt', 'r') as file:
+    app.config['SECRET_KEY'] = file.readline().strip('\n')
 Bootstrap(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+db = SQLAlchemy(model_class=Base)
+db.init_app(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
 
-class LoginForm(FlaskForm):
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Login', render_kw={'class': 'btn custom-btn'})
 
-class SubmissionForm(FlaskForm):
-    age = IntegerField('Age', validators=[DataRequired()])
-    cityofresidence = StringField('City of Residence', validators=[DataRequired()])
-    zipcode = IntegerField('Zipcode', validators=[DataRequired()])
-    referredby = SelectField('Referred by', validators=[DataRequired()], choices=[('Friend', 'Friend'),
-                                                                                      ('Family', 'Family'),
-                                                                                      ('Other', 'Other')])
+class User(UserMixin, db.Model):
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    password: Mapped[str] = mapped_column(String(100))
+    name: Mapped[str] = mapped_column(String(1000))
 
-    education = SelectField('Education', validators=[DataRequired()], choices=[('Grade School', 'Grade School'),
-                                                                                   ('Some High School', 'Some High School'),
-                                                                                   ('GED', 'GED'),
-                                                                                   ('Some College', 'Some College'),
-                                                                                   ('College Degree', 'College Degree'),
-                                                                                   ('None', 'None')])
-
-    gender = SelectField("Gender", validators=[DataRequired()], choices=[('Male', 'Male'),
-                                                                             ('Female', 'Female'),
-                                                                             ('Other', 'Other'),
-                                                                             ('Decline to answer', 'Decline to answer')])
-
-    ethnicity = SelectField('Ethnicity', validators=[DataRequired()], choices=[('Hispanic/Latino', 'Hispanic/Latino'),
-                                                                                   ('White/Caucasian', 'White/Caucasian'),
-                                                                                   ('Unknown', 'Unknown')])
-
-    race = SelectField('Race', validators=[DataRequired()], choices=[('Caucasian', 'Caucasian'),
-                                                                             ('Black', 'Black'),
-                                                                             ('Asian', 'Asian'),
-                                                                             ('Native American', 'Native American'),
-                                                                             ('Pacific Islander', 'Pacific Islander'),
-                                                                             ('Multi-racial', 'Multi-racial'),
-                                                                             ('Other', 'Other')])
-
-    housing = SelectField('Housing', validators=[DataRequired()], choices=[('Apartment', 'Apartment'),
-                                                                               ('Public Shelter', 'Public Shelter'),
-                                                                               ('Near Homeless', 'Near Homeless'),
-                                                                               ('Private Home', 'Private Home'),
-                                                                               ('Car/Street Trailer','Car/Street Trailer'),
-                                                                               ('Homeless', 'Homeless')])
-    number_of_dependants = IntegerField('Number of Dependents in Household', validators=[DataRequired()])
-    language = SelectField('Language', validators=[DataRequired()], choices=[('English', 'English'), ('Spanish', 'Spanish')])
-
-    veteran = BooleanField('Veteran', validators=[DataRequired()])
-
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
     form = LoginForm()
-    return render_template("index.html", form=form)
-
-@app.route('/form_page')
-def form_page():
+    if request.method == 'GET':
+        return render_template("index.html", form=form)
+    if request.method == 'POST':
+        if form.validate():
+            return redirect(url_for('form'))
+@app.route('/form', methods=['GET', 'POST'])
+def form():
     form = SubmissionForm()
-    return render_template('form_page.html', form=form)
-
+    if request.method == 'GET':
+        return render_template('form_page.html', form=form)
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            return render_template('success.html')
 if __name__ == "__main__":
-    app.run(debug=True, port=5002, host='172.16.249.198')
+    app.run(debug=True, port=5002)
