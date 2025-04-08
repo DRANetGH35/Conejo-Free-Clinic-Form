@@ -46,7 +46,26 @@ class SubmissionForm(FlaskForm):
                                                                                ('Private Home', 'Private Home'),
                                                                                ('Car/Street Trailer','Car/Street Trailer'),
                                                                                ('Homeless', 'Homeless')])
+    household_income = IntegerField('Household Income (Monthly)', validators=[DataRequired()])
     number_of_dependants = IntegerField('Number of Dependents in Household', validators=[DataRequired()])
     language = SelectField('Language', validators=[DataRequired()], choices=[('English', 'English'), ('Spanish', 'Spanish')])
-
+    employment = SelectField('Employment', validators=[DataRequired()], choices=[('Community', 'Community'),
+                                                                                 ('Unemplyoed', 'Unemplyoed'),
+                                                                                 ('Disabled', 'Disabled'),
+                                                                                 ('Full-Time', 'Full-Time'),
+                                                                                 ('Part-Time', 'Part-Time'),
+                                                                                 ('Seasonal', 'Seasonal'),
+                                                                                 ('Student', 'Student')])
+    health_coverage = SelectField("Health Coverage", validators=[DataRequired()], choices=[('Medicare without part B', 'Medicare without part B'),
+                                                                                                ('Private Insurance', 'Private Insurance'),
+                                                                                                ('Covered California', 'Covered California'),
+                                                                                                ('None', 'None')])
+    hiv_status = SelectField('HIV Status', validators=[DataRequired()], choices=[('HIV+', 'HIV+'),
+                                                                                        ('HIV+, AIDS Status unknown', 'HIV+, AIDS Status unknown'),
+                                                                                        ('CDC-Defined AIDS', 'CDC-Defined AIDS')])
+    lgbtq_status = SelectField('Member of LGBTQ+', validators=[DataRequired()], choices=[('Yes', 'Yes'),
+                                                                                            ('No', 'No'),
+                                                                                            ('Decline to answer', 'Decline to answer')])
     veteran = BooleanField('Veteran', validators=[DataRequired()])
+
+    submit = SubmitField('Submit')

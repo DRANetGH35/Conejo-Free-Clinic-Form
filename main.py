@@ -5,7 +5,7 @@ from flask_ckeditor import CKEditor
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Text
+from sqlalchemy import Integer, String, Text, select
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from forms import LoginForm, SubmissionForm
@@ -28,6 +28,13 @@ class User(UserMixin, db.Model):
     password: Mapped[str] = mapped_column(String(100))
     name: Mapped[str] = mapped_column(String(1000))
 
+@login_manager.user_loader
+def load_user(user_id):
+    user_to_load = db.session.execute(select(User).where(User.id == user_id)).scalar()
+    if user_to_load:
+        return user_to_load
+    else:
+        return None
 @app.route('/', methods=['GET', 'POST'])
 def home():
     form = LoginForm()
@@ -44,5 +51,11 @@ def form():
     if request.method == 'POST':
         if form.validate_on_submit():
             return render_template('success.html')
+
+'''      
+with app.app_context():
+    db.create_all()
+'''
+
 if __name__ == "__main__":
     app.run(debug=True, port=5002)
