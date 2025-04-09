@@ -12,7 +12,7 @@ class SubmissionForm(FlaskForm):
     age = IntegerField('Age', validators=[DataRequired()])
     city_of_residence = StringField('City of Residence', validators=[DataRequired()])
     zipcode = IntegerField('Zipcode', validators=[DataRequired()])
-    referredby = SelectField('Referred by', validators=[DataRequired()], choices=[('Friend', 'Friend'),
+    referred_by = SelectField('Referred by', validators=[DataRequired()], choices=[('Friend', 'Friend'),
                                                                                       ('Family', 'Family'),
                                                                                       ('Other', 'Other')])
 

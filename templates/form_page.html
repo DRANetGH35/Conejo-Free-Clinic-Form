@@ -7,8 +7,68 @@
     <div class="form_container">
         <form>
             {{ form.hidden_tag() }}
-            <label for="city_of_residence">City of Residence</label>
-            <input id="city_of_residence" name="city_of_residence" class="awesomplete form-control" data-list="{{ cities_in_california|join(', ') }}" value="{{form.city_of_residence.data or '' }}"/>
+            <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="city_of_residence">City of Residence</label>
+                <input id="city_of_residence" name="city_of_residence" class="awesomplete form-control" data-list="{{ cities_in_california|join(', ') }}" value="{{form.city_of_residence.data or '' }}"/>
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.age.label }}
+                {{form.age(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.referred_by.label }}
+                {{ form.referred_by(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.education.label }}
+                {{ form.education(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.gender.label }}
+                {{ form.gender(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.ethnicity.label }}
+                {{ form.ethnicity(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.race.label }}
+                {{ form.race(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.housing.label }}
+                {{ form.housing(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.number_of_dependants.label }}
+                {{ form.number_of_dependants(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.language.label }}
+                {{ form.language(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.employment.label }}
+                {{ form.employment(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.health_coverage.label }}
+                {{ form.health_coverage(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.hiv_status.label }}
+                {{ form.hiv_status(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.lgbtq_status.label }}
+                {{ form.lgbtq_status(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3 form-check">
+                {{ form.veteran.label(class="form-check-label") }}
+                {{ form.veteran(class="form-check-input") }}
+            </div>
+            </div>
         </form>
 
 
