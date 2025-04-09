@@ -7,8 +7,10 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Text, select
 from werkzeug.security import generate_password_hash, check_password_hash
+from cities import cities_in_california
 
 from forms import LoginForm, SubmissionForm
+
 
 class Base(DeclarativeBase):
     pass
@@ -47,15 +49,18 @@ def home():
 def form():
     form = SubmissionForm()
     if request.method == 'GET':
-        return render_template('form_page.html', form=form)
+        return render_template('form_page.html', form=form, cities_in_california=cities_in_california())
     if request.method == 'POST':
         if form.validate_on_submit():
             return render_template('success.html')
-
+@app.route('/test')
+def test():
+    print(cities_in_california())
+    return redirect(url_for('home'))
 '''      
 with app.app_context():
     db.create_all()
 '''
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5002)
+    app.run(debug=True, port=5002, host='192.168.86.53')

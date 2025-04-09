@@ -5,7 +5,14 @@
         <img src="static/ConejoFreeClinicLogo.png" alt="Logo" class="img-fluid">
     </div>
     <div class="form_container">
-        {{ render_form(form) }}
+        <form>
+            {{ form.hidden_tag() }}
+            <label for="city_of_residence">City of Residence</label>
+            <input id="city_of_residence" name="city_of_residence" class="awesomplete form-control" data-list="{{ cities_in_california|join(', ') }}" value="{{form.city_of_residence.data or '' }}"/>
+        </form>
+
+
+
     </div>
 </div>
 {% endblock %}

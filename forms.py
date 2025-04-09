@@ -10,7 +10,7 @@ class LoginForm(FlaskForm):
 
 class SubmissionForm(FlaskForm):
     age = IntegerField('Age', validators=[DataRequired()])
-    cityofresidence = StringField('City of Residence', validators=[DataRequired()])
+    city_of_residence = StringField('City of Residence', validators=[DataRequired()])
     zipcode = IntegerField('Zipcode', validators=[DataRequired()])
     referredby = SelectField('Referred by', validators=[DataRequired()], choices=[('Friend', 'Friend'),
                                                                                       ('Family', 'Family'),
@@ -68,4 +68,4 @@ class SubmissionForm(FlaskForm):
                                                                                             ('Decline to answer', 'Decline to answer')])
     veteran = BooleanField('Veteran', validators=[DataRequired()])
 
-    submit = SubmitField('Submit')
+    submit = SubmitField('Submit', render_kw={'class': 'btn custom-btn'})
