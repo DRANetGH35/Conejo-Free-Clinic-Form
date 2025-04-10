@@ -24,11 +24,37 @@ db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+class Entry(db.Model):
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, nullable=False)
+    age: Mapped[int] = mapped_column(Integer, nullable=False)
+    city_of_residence: Mapped[str] = mapped_column(String, nullable=False)
+    zipcode: Mapped[int] = mapped_column(Integer, nullable=False)
+    referred_by: Mapped[str] = mapped_column(String, nullable=False)
+    education: Mapped[str] = mapped_column(String, nullable=False)
+    gender: Mapped[str] = mapped_column(String, nullable=False)
+    ethnicity: Mapped[str] = mapped_column(String, nullable=False)
+    race: Mapped[str] = mapped_column(String, nullable=False)
+    housing: Mapped[str] = mapped_column(String, nullable=False)
+    household_income: Mapped[int] = mapped_column(Integer, nullable=False)
+    number_of_dependants: Mapped[int] = mapped_column(Integer, nullable=False)
+    language: Mapped[str] = mapped_column(String, nullable=False)
+    employment: Mapped[str] = mapped_column(String, nullable=False)
+
 
 class User(UserMixin, db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     password: Mapped[str] = mapped_column(String(100))
     name: Mapped[str] = mapped_column(String(1000))
+
+#Returns True if there are any registered users (Only the admin user should exist)
+def admin_user_exists():
+    users = db.session.execute(db.select(User)).scalar()
+    if users:
+        return True
+    return False
+def create_admin_user():
+    db.session.add(User(name='admin', password='password'))
+    db.session.commit()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -39,6 +65,9 @@ def load_user(user_id):
         return None
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    if not admin_user_exists():
+        create_admin_user()
+
     form = LoginForm()
     if request.method == 'GET':
         return render_template("index.html", form=form)
@@ -55,12 +84,17 @@ def form():
             return render_template('success.html')
 @app.route('/test')
 def test():
-    print(cities_in_california())
+    print(admin_user_exists())
+    '''
+    db.session.add(User(name='admin', password='password'))
+    db.session.commit()
+    '''
     return redirect(url_for('home'))
-'''      
+'''
 with app.app_context():
     db.create_all()
 '''
+
 
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -74,6 +108,7 @@ def get_ip():
     finally:
         s.close()
     return IP
+
 
 
 if __name__ == "__main__":
