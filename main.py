@@ -1,3 +1,4 @@
+import os
 from datetime import date
 from flask import Flask, abort, render_template, redirect, url_for, flash, request
 from flask_bootstrap import Bootstrap
@@ -52,9 +53,19 @@ def admin_user_exists():
     if users:
         return True
     return False
+# creates the admin user
 def create_admin_user():
     db.session.add(User(name='admin', password='password'))
     db.session.commit()
+# Returns true if the database exists
+def database_exists():
+    if os.path.exists('/instance/users.db'):
+        return True
+    return False
+# Creates database():
+def create_database():
+    with app.app_context():
+        db.create_all()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -85,15 +96,7 @@ def form():
 @app.route('/test')
 def test():
     print(admin_user_exists())
-    '''
-    db.session.add(User(name='admin', password='password'))
-    db.session.commit()
-    '''
     return redirect(url_for('home'))
-'''
-with app.app_context():
-    db.create_all()
-'''
 
 
 def get_ip():
@@ -109,6 +112,8 @@ def get_ip():
         s.close()
     return IP
 
+if not database_exists():
+    create_database()
 
 
 if __name__ == "__main__":
