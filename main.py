@@ -62,6 +62,7 @@ def database_exists():
     if os.path.exists('/instance/users.db'):
         return True
     return False
+
 # Creates database():
 def create_database():
     with app.app_context():
@@ -79,12 +80,15 @@ def home():
     if not admin_user_exists():
         create_admin_user()
 
-    form = LoginForm()
+    form = LoginForm(stored_password=db.session.execute(db.select(User).where(User.name == 'admin')).scalar().password)
     if request.method == 'GET':
         return render_template("index.html", form=form)
     if request.method == 'POST':
         if form.validate():
+            login_user(db.session.execute(db.select(User).where(User.name == 'admin')).scalar())
             return redirect(url_for('form'))
+        else:
+            return render_template('index.html', form=form, errors=form.errors)
 @app.route('/form', methods=['GET', 'POST'])
 def form():
     form = SubmissionForm()
@@ -95,7 +99,7 @@ def form():
             return render_template('success.html')
 @app.route('/test')
 def test():
-    print(admin_user_exists())
+    print(current_user.name)
     return redirect(url_for('home'))
 
 

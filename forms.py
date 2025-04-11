@@ -1,12 +1,24 @@
 from wtforms.fields import PasswordField, SubmitField, StringField, IntegerField
 from wtforms.fields.choices import SelectField
 from wtforms.fields.simple import BooleanField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, ValidationError
 from flask_wtf import FlaskForm
+
+
+
+
 
 class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login', render_kw={'class': 'btn custom-btn'})
+
+    def __init__(self, stored_password=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.stored_password = stored_password
+
+    def validate_password(self, field):
+        if field.data != self.stored_password:
+            raise ValidationError('Passwords do not match')
 
 class SubmissionForm(FlaskForm):
     age = IntegerField('Age', validators=[DataRequired()])
