@@ -46,8 +46,11 @@ class User(UserMixin, db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     password: Mapped[str] = mapped_column(String(100))
     name: Mapped[str] = mapped_column(String(1000))
+
 def is_logged_in():
-    return True
+    if current_user.is_authenticated:
+        return True
+    return False
 #Returns True if there are any registered users (Only the admin user should exist)
 def admin_user_exists():
     users = db.session.execute(db.select(User)).scalar()
@@ -89,7 +92,7 @@ def home():
             login_user(db.session.execute(db.select(User).where(User.name == 'admin')).scalar())
             return redirect(url_for('form'))
         else:
-            return render_template('index.html', form=form, errors=form.errors)
+            return render_template('index.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
 @app.route('/form', methods=['GET', 'POST'])
 @login_required
 def form():
