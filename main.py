@@ -3,7 +3,7 @@ from datetime import date
 from flask import Flask, abort, render_template, redirect, url_for, flash, request
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
-from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
+from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Text, select
@@ -46,7 +46,8 @@ class User(UserMixin, db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     password: Mapped[str] = mapped_column(String(100))
     name: Mapped[str] = mapped_column(String(1000))
-
+def is_logged_in():
+    return True
 #Returns True if there are any registered users (Only the admin user should exist)
 def admin_user_exists():
     users = db.session.execute(db.select(User)).scalar()
@@ -90,16 +91,23 @@ def home():
         else:
             return render_template('index.html', form=form, errors=form.errors)
 @app.route('/form', methods=['GET', 'POST'])
+@login_required
 def form():
     form = SubmissionForm()
     if request.method == 'GET':
-        return render_template('form_page.html', form=form, cities_in_california=cities_in_california())
+        return render_template('form_page.html', form=form, is_logged_in=is_logged_in(), cities_in_california=cities_in_california())
     if request.method == 'POST':
         if form.validate_on_submit():
             return render_template('success.html')
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
+
 @app.route('/test')
 def test():
-    print(current_user.name)
+    print(current_user.is_authenticated)
     return redirect(url_for('home'))
 
 
