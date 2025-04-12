@@ -59,7 +59,7 @@ def admin_user_exists():
     return False
 # creates the admin user
 def create_admin_user():
-    db.session.add(User(name='admin', password='password'))
+    db.session.add(User(name='admin', password=generate_password_hash('password', method="pbkdf2:sha256", salt_length=8)))
     db.session.commit()
 # Returns true if the database exists
 def database_exists():

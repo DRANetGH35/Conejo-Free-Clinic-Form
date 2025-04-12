@@ -3,7 +3,7 @@ from wtforms.fields.choices import SelectField
 from wtforms.fields.simple import BooleanField
 from wtforms.validators import DataRequired, ValidationError
 from flask_wtf import FlaskForm
-
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 
@@ -17,7 +17,7 @@ class LoginForm(FlaskForm):
         self.stored_password = stored_password
 
     def validate_password(self, field):
-        if field.data != self.stored_password:
+        if not check_password_hash(pwhash=self.stored_password, password=field.data):
             raise ValidationError('Passwords do not match')
 
 class SubmissionForm(FlaskForm):
