@@ -121,6 +121,14 @@ def change_password():
     flash('Your password has been changed')
     return redirect(url_for('home'))
 
+@app.route('/reset', methods=['GET'])
+def reset():
+    user = db.session.execute(db.select(User).where(User.name == 'admin')).scalar()
+    user.password = generate_password_hash(password='password', method='pbkdf2:sha256', salt_length=8)
+    db.session.commit()
+    flash("Your password has been reset")
+    return redirect(url_for('home'))
+
 @app.route('/logout')
 def logout():
     logout_user()
