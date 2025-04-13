@@ -5,11 +5,14 @@ from wtforms.validators import DataRequired, ValidationError
 from flask_wtf import FlaskForm
 from werkzeug.security import check_password_hash, generate_password_hash
 
-
-
+class ChangePasswordForm(FlaskForm):
+    password = PasswordField('New Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired()])
+    submit = SubmitField('Submit', render_kw={'class': 'btn custom-btn'})
 
 class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
+    change_password = BooleanField('Change Password')
     submit = SubmitField('Login', render_kw={'class': 'btn custom-btn'})
 
     def __init__(self, stored_password=None, *args, **kwargs):
@@ -19,6 +22,8 @@ class LoginForm(FlaskForm):
     def validate_password(self, field):
         if not check_password_hash(pwhash=self.stored_password, password=field.data):
             raise ValidationError('Passwords do not match')
+
+
 
 class SubmissionForm(FlaskForm):
     age = IntegerField('Age', validators=[DataRequired()])
