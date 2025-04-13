@@ -4,13 +4,24 @@
     <div class="image_container">
         <img src="static/ConejoFreeClinicLogo.png" alt="Logo" class="img-fluid">
     </div>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <p class="flashes">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
     <div class="form_container">
-        <form>
+        <form action="{{ url_for('form') }}" method="post">
             {{ form.hidden_tag() }}
             <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="city_of_residence">City of Residence</label>
                 <input id="city_of_residence" name="city_of_residence" class="awesomplete form-control" data-list="{{ cities_in_california|join(', ') }}" value="{{form.city_of_residence.data or '' }}"/>
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.zipcode.label }}
+                {{ form.zipcode(class="form-control") }}
             </div>
             <div class="col-md-6 mb-3">
                 {{ form.age.label }}
@@ -41,6 +52,10 @@
                 {{ form.housing(class="form-control") }}
             </div>
             <div class="col-md-6 mb-3">
+                {{ form.household_income.label }}
+                {{ form.household_income(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3">
                 {{ form.number_of_dependants.label }}
                 {{ form.number_of_dependants(class="form-control") }}
             </div>
@@ -67,6 +82,9 @@
             <div class="col-md-6 mb-3 form-check">
                 {{ form.veteran.label(class="form-check-label") }}
                 {{ form.veteran(class="form-check-input") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.submit(class="custom-btn btn") }}
             </div>
             </div>
         </form>

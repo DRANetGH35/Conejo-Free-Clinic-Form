@@ -103,9 +103,11 @@ def form():
     form = SubmissionForm()
     if request.method == 'GET':
         return render_template('form_page.html', form=form, is_logged_in=is_logged_in(), cities_in_california=cities_in_california())
-    if request.method == 'POST':
-        if form.validate_on_submit():
-            return render_template('success.html')
+    if not form.validate():
+        print(form.errors)
+        flash('error')
+        return render_template('form_page.html', errors=form.errors, form=form, is_logged_in=is_logged_in(), cities_in_california=cities_in_california())
+    return '<p>success</p>'
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
