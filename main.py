@@ -89,7 +89,7 @@ def home():
         return render_template("index.html", form=form)
     if not form.validate():
         return render_template('index.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
-    if form.change_password:
+    if form.change_password.data:
         return render_template('change_password.html', form=ChangePasswordForm())
     login_user(db.session.execute(db.select(User).where(User.name == 'admin')).scalar())
     return redirect(url_for('form'))
