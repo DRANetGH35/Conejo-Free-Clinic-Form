@@ -51,16 +51,19 @@ def is_logged_in():
     if current_user.is_authenticated:
         return True
     return False
+
 #Returns True if there are any registered users (Only the admin user should exist)
 def admin_user_exists():
     users = db.session.execute(db.select(User)).scalar()
     if users:
         return True
     return False
+
 # creates the admin user
 def create_admin_user():
     db.session.add(User(name='admin', password=generate_password_hash('password', method="pbkdf2:sha256", salt_length=8)))
     db.session.commit()
+
 # Returns true if the database exists
 def database_exists():
     if os.path.exists('/instance/users.db'):
@@ -86,7 +89,7 @@ def home():
 
     form = LoginForm(stored_password=db.session.execute(db.select(User).where(User.name == 'admin')).scalar().password)
     if request.method == 'GET':
-        return render_template("index.html", form=form)
+        return render_template("index.html", form=form, is_logged_in=is_logged_in())
     if not form.validate():
         return render_template('index.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
     login_user(db.session.execute(db.select(User).where(User.name == 'admin')).scalar())
