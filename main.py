@@ -115,7 +115,11 @@ def change_password():
     if form.password.data != form.confirm_password.data:
         flash('Passwords do not match')
         return render_template('change_password.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
-    return '<p>Success</p>'
+    user = db.session.execute(db.select(User).where(User.name == 'admin')).scalar()
+    user.password = generate_password_hash(password=form.password.data, method='pbkdf2:sha256', salt_length=8)
+    db.session.commit()
+    flash('Your password has been changed')
+    return redirect(url_for('home'))
 
 @app.route('/logout')
 def logout():
