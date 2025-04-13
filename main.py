@@ -10,7 +10,7 @@ from sqlalchemy import Integer, String, Text, select
 from werkzeug.security import generate_password_hash, check_password_hash
 from cities import cities_in_california
 import socket
-from forms import LoginForm, SubmissionForm
+from forms import LoginForm, SubmissionForm, ChangePasswordForm
 
 
 class Base(DeclarativeBase):
@@ -87,12 +87,13 @@ def home():
     form = LoginForm(stored_password=db.session.execute(db.select(User).where(User.name == 'admin')).scalar().password)
     if request.method == 'GET':
         return render_template("index.html", form=form)
-    if request.method == 'POST':
-        if form.validate():
-            login_user(db.session.execute(db.select(User).where(User.name == 'admin')).scalar())
-            return redirect(url_for('form'))
-        else:
-            return render_template('index.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
+    if not form.validate():
+        return render_template('index.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
+    if form.change_password:
+        return render_template('change_password.html', form=ChangePasswordForm())
+    login_user(db.session.execute(db.select(User).where(User.name == 'admin')).scalar())
+    return redirect(url_for('form'))
+
 @app.route('/form', methods=['GET', 'POST'])
 @login_required
 def form():
