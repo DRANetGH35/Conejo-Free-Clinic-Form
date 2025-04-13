@@ -89,9 +89,9 @@ def home():
         return render_template("index.html", form=form)
     if not form.validate():
         return render_template('index.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
-    if form.change_password.data:
-        return render_template('change_password.html', form=ChangePasswordForm())
     login_user(db.session.execute(db.select(User).where(User.name == 'admin')).scalar())
+    if form.change_password.data:
+        return redirect(url_for('change_password'))
     return redirect(url_for('form'))
 
 @app.route('/form', methods=['GET', 'POST'])
@@ -103,6 +103,19 @@ def form():
     if request.method == 'POST':
         if form.validate_on_submit():
             return render_template('success.html')
+
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if request.method == 'GET':
+        return render_template('change_password.html', form=form, is_logged_in=is_logged_in())
+    if not form.validate():
+        return render_template('change_password.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
+    if form.password.data != form.confirm_password.data:
+        flash('Passwords do not match')
+        return render_template('change_password.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
+    return '<p>Success</p>'
 
 @app.route('/logout')
 def logout():
