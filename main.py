@@ -1,7 +1,7 @@
 import os
 from datetime import date
 from flask import Flask, abort, render_template, redirect, url_for, flash, request
-from flask_bootstrap import Bootstrap
+from flask_bootstrap import Bootstrap, Bootstrap5
 from flask_ckeditor import CKEditor
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
@@ -18,7 +18,7 @@ class Base(DeclarativeBase):
 app = Flask(__name__)
 with open('csrfkey.txt', 'r') as file:
     app.config['SECRET_KEY'] = file.readline().strip('\n')
-Bootstrap(app)
+Bootstrap5(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
