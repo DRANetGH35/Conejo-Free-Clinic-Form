@@ -1,3 +1,4 @@
+import csv
 import os
 from datetime import date
 from flask import Flask, abort, render_template, redirect, url_for, flash, request
@@ -107,7 +108,7 @@ def form():
         print(form.errors)
         flash('error')
         return render_template('form_page.html', errors=form.errors, form=form, is_logged_in=is_logged_in(), cities_in_california=cities_in_california())
-    return '<p>success</p>'
+    return render_template('success.html')
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
@@ -138,6 +139,7 @@ def reset():
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
 
 @app.route('/test')
 def test():
