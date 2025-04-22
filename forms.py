@@ -68,7 +68,7 @@ class SubmissionForm(FlaskForm):
                                                    ('Near Homeless', 'Near Homeless'),
                                                    ('Private Home', 'Private Home'),
                                                    ('Car/Street Trailer','Car/Street Trailer'),
-                                                   ('Homeless', 'Homeless')])
+                                                   ('Un-Housed', 'Un-Housed')])
     household_income = IntegerField('Household Income (Monthly)', validators=[DataRequired(), ensure_positive_number])
     number_of_dependants = IntegerField('Number of Dependents in Household', validators=[DataRequired(), ensure_positive_number])
     language = SelectField('Language', choices=[('English', 'English'),
@@ -84,7 +84,8 @@ class SubmissionForm(FlaskForm):
                                                                     ('Private Insurance', 'Private Insurance'),
                                                                     ('Covered California', 'Covered California'),
                                                                     ('None', 'None')])
-    hiv_status = SelectField('HIV Status', choices=[('HIV+', 'HIV+'),
+    hiv_status = SelectField('HIV Status', choices=[('N/A', 'N/A'),
+                                                        ('HIV+', 'HIV+'),
                                                         ('HIV+, AIDS Status unknown', 'HIV+, AIDS Status unknown'),
                                                         ('CDC-Defined AIDS', 'CDC-Defined AIDS')])
     lgbtq_status = SelectField('Member of LGBTQ+', choices=[('Yes', 'Yes'),
