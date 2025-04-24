@@ -7,7 +7,7 @@ from flask_ckeditor import CKEditor
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Text, select
+from sqlalchemy import Integer, String, Text, select, Boolean
 from werkzeug.security import generate_password_hash, check_password_hash
 from cities import cities_in_california
 import socket
@@ -41,7 +41,10 @@ class Entry(db.Model):
     number_of_dependants: Mapped[int] = mapped_column(Integer, nullable=False)
     language: Mapped[str] = mapped_column(String, nullable=False)
     employment: Mapped[str] = mapped_column(String, nullable=False)
-
+    health_coverage: Mapped[str] = mapped_column(String, nullable=False)
+    hiv_status: Mapped[str] = mapped_column(String, nullable=False)
+    lgbtq_status: Mapped[str] = mapped_column(String, nullable=False)
+    veteran: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
 class User(UserMixin, db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -108,6 +111,26 @@ def form():
         print(form.errors)
         flash('error')
         return render_template('form_page.html', errors=form.errors, form=form, is_logged_in=is_logged_in(), cities_in_california=cities_in_california())
+    new_entry = Entry(age=form.age.data,
+                      city_of_residence=form.city_of_residence.data,
+                      zipcode=form.zipcode.data,
+                      referred_by=form.referred_by.data,
+                      education=form.education.data,
+                      gender=form.gender.data,
+                      ethnicity=form.ethnicity.data,
+                      race=form.race.data,
+                      housing=form.housing.data,
+                      household_income=form.household_income.data,
+                      number_of_dependants=form.number_of_dependants.data,
+                      language=form.language.data,
+                      employment=form.employment.data,
+                      health_coverage=form.health_coverage.data,
+                      hiv_status=form.hiv_status.data,
+                      lgbtq_status=form.lgbtq_status.data,
+                      veteran=form.veteran.data
+                      )
+    db.session.add(new_entry)
+    db.session.commit()
     return render_template('success.html')
 
 @app.route('/change_password', methods=['GET', 'POST'])
