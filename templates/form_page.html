@@ -2,6 +2,7 @@
 {% extends "base.html" %} {% block content %}
 
 {% include 'navbar.html' %}
+<body>
 
 <div class="custom-container">
     <div class="image_container">
@@ -96,4 +97,28 @@
 
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const zipcode_input = document.querySelector('input[name="zipcode"]');
+    const age_input = document.querySelector('input[name="age"]');
+    const income_input = document.querySelector('input[name="household_income"]');
+    const dependants_input = document.querySelector('input[name="number_of_dependants"]');
+
+    zipcode_input.addEventListener('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 5);
+    });
+    age_input.addEventListener('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 3);
+    });
+    income_input.addEventListener('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 20);
+    });
+    dependants_input.addEventListener('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 3);
+    });
+
+});
+</script>
+</body>
 {% endblock %}
