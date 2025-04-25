@@ -74,7 +74,7 @@ class SubmissionForm(FlaskForm):
     language = SelectField('Language', choices=[('English', 'English'),
                                                         ('Spanish', 'Spanish')])
     employment = SelectField('Employment', choices=[('Community', 'Community'),
-                                                         ('Unemplyoed', 'Unemplyoed'),
+                                                         ('Unemployed', 'Unemployed'),
                                                          ('Disabled', 'Disabled'),
                                                          ('Full-Time', 'Full-Time'),
                                                          ('Part-Time', 'Part-Time'),
