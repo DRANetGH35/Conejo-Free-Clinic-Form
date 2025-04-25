@@ -108,8 +108,8 @@ def form():
     if request.method == 'GET':
         return render_template('form_page.html', form=form, is_logged_in=is_logged_in(), cities_in_california=cities_in_california())
     if not form.validate():
-        print(form.errors)
-        flash('error')
+        for error in form.errors:
+            flash(error)
         return render_template('form_page.html', errors=form.errors, form=form, is_logged_in=is_logged_in(), cities_in_california=cities_in_california())
     new_entry = Entry(age=form.age.data,
                       city_of_residence=form.city_of_residence.data,
