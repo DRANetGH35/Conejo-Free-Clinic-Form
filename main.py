@@ -1,6 +1,6 @@
 import csv
 import os
-from datetime import date
+from datetime import date, timedelta
 from flask import Flask, abort, render_template, redirect, url_for, flash, request
 from flask_bootstrap import Bootstrap, Bootstrap5
 from flask_ckeditor import CKEditor
@@ -21,6 +21,7 @@ with open('csrfkey.txt', 'r') as file:
     app.config['SECRET_KEY'] = file.readline().strip('\n')
 Bootstrap5(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30) #Time the user out after 30 minutes
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 login_manager = LoginManager()

@@ -4,9 +4,7 @@
 {% include 'navbar.html' %}
 
 
-    {% if is_logged_in %}
-    <a class="active custom-btn btn btn-primary" href="{{ url_for('form') }}">Continue</a>
-    {% else %}
+<div class="custom-container">
     <div class="form_container">
         {{ render_form(form) }}
 
@@ -19,5 +17,5 @@
         {% endwith %}
 
     </div>
-    {% endif %}
+</div>
 {% endblock %}
