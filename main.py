@@ -131,6 +131,7 @@ def form():
                       )
     db.session.add(new_entry)
     db.session.commit()
+    logout_user()
     return render_template('success.html')
 
 @app.route('/change_password', methods=['GET', 'POST'])
