@@ -1,5 +1,6 @@
 import csv
 import os
+import sqlite3
 from datetime import date, timedelta
 from flask import Flask, abort, render_template, redirect, url_for, flash, request
 from flask_bootstrap import Bootstrap, Bootstrap5
@@ -7,12 +8,13 @@ from flask_ckeditor import CKEditor
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Text, select, Boolean
+from sqlalchemy import Integer, String, Text, select, Boolean, create_engine
 from werkzeug.security import generate_password_hash, check_password_hash
 from cities import cities_in_california
 import socket
 from forms import LoginForm, SubmissionForm, ChangePasswordForm
-
+import pandas as pd
+import matplotlib.pyplot as plt
 
 class Base(DeclarativeBase):
     pass
@@ -179,8 +181,26 @@ def logout():
 
 @app.route('/test')
 def test():
-    print(current_user.is_authenticated)
-    return redirect(url_for('home'))
+    conn = None
+    try:
+        conn = sqlite3.connect('instance/users.db')
+        query = "SELECT * FROM entry"
+        df = pd.read_sql(query, conn)
+        city_of_residence_df = df.groupby('city_of_residence').count().sort_values('age', ascending=False)
+        ax1 = plt.gca()
+        ax1.bar(city_of_residence_df.index, city_of_residence_df.age)
+        ax1.set_xlabel('city of residence')
+        plt.xticks(fontsize=14, rotation=90)
+        plt.savefig('static/test.png')
+
+    except sqlite3.Error as e:
+        return f"Database Error: {e}", 500
+    finally:
+        if conn:
+            conn.close()
+
+
+    return render_template('test.html')
 
 
 def get_ip():
