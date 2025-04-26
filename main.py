@@ -62,7 +62,7 @@ def render_plot():
         df = pd.read_sql(query, conn)
         city_of_residence_df = df.groupby('city_of_residence').count().sort_values('age', ascending=False)
         ax1 = plt.gca()
-        ax1.bar(city_of_residence_df.index, city_of_residence_df.age)
+        ax1.bar(city_of_residence_df.index, city_of_residence_df.age, color="blue")
         ax1.set_xlabel('city of residence')
         plt.xticks(fontsize=14, rotation=90)
         plt.tight_layout()
