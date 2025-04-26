@@ -54,7 +54,7 @@ class User(UserMixin, db.Model):
     password: Mapped[str] = mapped_column(String(100))
     name: Mapped[str] = mapped_column(String(1000))
 
-def render_plot():
+def render_city_of_residence_plot():
     conn = None
     try:
         conn = sqlite3.connect('instance/users.db')
@@ -173,6 +173,11 @@ def change_password():
     flash('Your password has been changed')
     return redirect(url_for('home'))
 
+@app.route('/statistics')
+def statistics():
+    render_city_of_residence_plot()
+    return render_template('statistics.html')
+
 @app.route('/reset', methods=['GET'])
 def reset():
     user = db.session.execute(db.select(User).where(User.name == 'admin')).scalar()
@@ -200,8 +205,8 @@ def logout():
 
 @app.route('/test')
 def test():
-    render_plot()
-    return render_template('test.html')
+    render_template(url_for('home'))
+
 
 
 def get_ip():
