@@ -54,6 +54,25 @@ class User(UserMixin, db.Model):
     password: Mapped[str] = mapped_column(String(100))
     name: Mapped[str] = mapped_column(String(1000))
 
+def render_plot():
+    conn = None
+    try:
+        conn = sqlite3.connect('instance/users.db')
+        query = "SELECT * FROM entry"
+        df = pd.read_sql(query, conn)
+        city_of_residence_df = df.groupby('city_of_residence').count().sort_values('age', ascending=False)
+        ax1 = plt.gca()
+        ax1.bar(city_of_residence_df.index, city_of_residence_df.age)
+        ax1.set_xlabel('city of residence')
+        plt.xticks(fontsize=14, rotation=90)
+        plt.tight_layout()
+        plt.savefig('static/test.png')
+
+    except sqlite3.Error as e:
+        return f"Database Error: {e}", 500
+    finally:
+        if conn:
+            conn.close()
 def is_logged_in():
     if current_user.is_authenticated:
         return True
@@ -181,25 +200,7 @@ def logout():
 
 @app.route('/test')
 def test():
-    conn = None
-    try:
-        conn = sqlite3.connect('instance/users.db')
-        query = "SELECT * FROM entry"
-        df = pd.read_sql(query, conn)
-        city_of_residence_df = df.groupby('city_of_residence').count().sort_values('age', ascending=False)
-        ax1 = plt.gca()
-        ax1.bar(city_of_residence_df.index, city_of_residence_df.age)
-        ax1.set_xlabel('city of residence')
-        plt.xticks(fontsize=14, rotation=90)
-        plt.savefig('static/test.png')
-
-    except sqlite3.Error as e:
-        return f"Database Error: {e}", 500
-    finally:
-        if conn:
-            conn.close()
-
-
+    render_plot()
     return render_template('test.html')
 
 
