@@ -205,7 +205,18 @@ def logout():
 
 @app.route('/test')
 def test():
-    render_template(url_for('home'))
+    conn = None
+    try:
+        conn = sqlite3.connect('instance/users.db')
+        query = "SELECT * FROM entry"
+        df = pd.read_sql(query, conn)
+        print(df.age.mean())
+    except sqlite3.Error as e:
+        return f"Database Error: {e}", 500
+    finally:
+        if conn:
+            conn.close()
+    return redirect(url_for('home'))
 
 
 
