@@ -1,0 +1,23 @@
+{% from "bootstrap5/form.html" import render_form %}
+{% extends "base.html" %} {% block content %}
+
+{% include 'navbar.html' %}
+
+
+    {% if is_logged_in %}
+    <a class="active custom-btn btn btn-primary" href="{{ url_for('form') }}">Continue</a>
+    {% else %}
+    <div class="form_container">
+        {{ render_form(form) }}
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <p class="flashes">{{ message }}</p>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+    </div>
+    {% endif %}
+{% endblock %}

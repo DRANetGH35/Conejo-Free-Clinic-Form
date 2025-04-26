@@ -158,6 +158,17 @@ def reset():
     flash("Your password has been reset")
     return redirect(url_for('home'))
 
+@app.route('/login', methods=['GET', 'POST'])
+def login_route():
+    form = LoginForm(stored_password=db.session.execute(db.select(User).where(User.name == 'admin')).scalar().password)
+    if request.method == 'POST':
+        if not form.validate():
+            return redirect(url_for('login'))
+        login_user(db.session.execute(db.select(User).where(User.name == 'admin')).scalar())
+        return redirect(url_for('home'))
+    else:
+        return render_template('login.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
+
 @app.route('/logout')
 def logout():
     logout_user()

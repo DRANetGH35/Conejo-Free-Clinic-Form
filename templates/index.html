@@ -8,22 +8,11 @@
         <img src="static/ConejoFreeClinicLogo.png" alt="Logo" class="img-fluid">
     </div>
     {% if is_logged_in %}
-    <a class="active custom-btn btn btn-primary" href="{{ url_for('form') }}">Continue</a>
+    <a class="active custom-btn btn btn-primary" href="{{ url_for('form') }}">Begin Form</a>
     {% else %}
-    <div class="form_container">
-        {{ render_form(form) }}
-
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            {% for message in messages %}
-              <p class="flashes">{{ message }}</p>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-
-    </div>
+    <a class="active custom-btn btn btn-primary" href="{{ url_for('login_route') }}">Login</a>
     {% endif %}
-    <a class="active custom-btn btn btn-primary" href="/test">Test</a>
+    <a class="active custom-btn btn btn-secondary" href="/test">Test</a>
 </div>
 
 
