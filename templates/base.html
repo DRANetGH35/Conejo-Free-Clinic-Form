@@ -11,6 +11,27 @@
 </head>
 <style>
 
+html, body{
+    height: 100%;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+.content {
+    flex: 1;  /* This will make the content area take up the available space */
+}
+
+footer {
+    text-align: center;
+    padding: 10px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
 .awesomplete mark {
     background-color: #cce5ff;
     color: #004085;
