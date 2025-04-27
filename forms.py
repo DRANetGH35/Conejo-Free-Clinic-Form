@@ -31,6 +31,28 @@ class LoginForm(FlaskForm):
 
 
 
+class CreateNewUserForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired()])
+    is_admin = BooleanField('Administrator')
+    submit = SubmitField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def validate_username(self, field):
+        from routes import db, select
+        from routes import User
+        if db.session.execute(select(User).where(User.name == field.data)).scalar_one_or_none():
+            raise ValidationError('Username already exists')
+
+
+    def validate_confirm_password(self, field):
+        if not self.password.data == self.confirm_password.data:
+            print('passwords do not match')
+            raise ValidationError('Passwords do not match')
+        print('passwords match')
 
 class SubmissionForm(FlaskForm):
     age = IntegerField('Age', validators=[DataRequired(), ensure_positive_number])
