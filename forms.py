@@ -16,6 +16,7 @@ class ChangePasswordForm(FlaskForm):
     submit = SubmitField('Submit', render_kw={'class': 'btn custom-btn'})
 
 class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     change_password = BooleanField('Change Password')
     submit = SubmitField('Login', render_kw={'class': 'btn custom-btn'})

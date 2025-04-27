@@ -16,11 +16,13 @@ from forms import LoginForm, SubmissionForm, ChangePasswordForm
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 class Base(DeclarativeBase):
     pass
 app = Flask(__name__)
 with open('csrfkey.txt', 'r') as file:
     app.config['SECRET_KEY'] = file.readline().strip('\n')
+
 Bootstrap5(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30) #Time the user out after 30 minutes
@@ -53,6 +55,7 @@ class User(UserMixin, db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     password: Mapped[str] = mapped_column(String(100))
     name: Mapped[str] = mapped_column(String(1000))
+    is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
 def render_city_of_residence_plot():
     conn = None
@@ -87,7 +90,7 @@ def admin_user_exists():
 
 # creates the admin user
 def create_admin_user():
-    db.session.add(User(name='admin', password=generate_password_hash('password', method="pbkdf2:sha256", salt_length=8)))
+    db.session.add(User(name='admin', password=generate_password_hash('password', method="pbkdf2:sha256", salt_length=8), is_admin=True))
     db.session.commit()
 
 # Returns true if the database exists
@@ -191,7 +194,7 @@ def login_route():
     form = LoginForm(stored_password=db.session.execute(db.select(User).where(User.name == 'admin')).scalar().password)
     if request.method == 'POST':
         if not form.validate():
-            return redirect(url_for('login'))
+            return render_template('login.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
         login_user(db.session.execute(db.select(User).where(User.name == 'admin')).scalar())
         return redirect(url_for('home'))
     else:
@@ -239,4 +242,6 @@ if not database_exists():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5002, host=get_ip())
+    with app.app_context():
+        db.create_all()
     #                              host='192.168.86.53'
