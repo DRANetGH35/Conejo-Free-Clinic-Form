@@ -146,7 +146,7 @@ def create_new_user():
 @app.route('/statistics')
 def statistics():
     render_city_of_residence_plot()
-    return render_template('statistics.html')
+    return render_template('statistics.html', is_logged_in=is_logged_in())
 
 @app.route('/reset', methods=['GET'])
 def reset():
@@ -158,11 +158,21 @@ def reset():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_route():
-    form = LoginForm(stored_password=db.session.execute(db.select(User).where(User.name == 'admin')).scalar().password)
+    form = LoginForm()
     if request.method == 'POST':
         if not form.validate():
             return render_template('login.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
-        login_user(db.session.execute(db.select(User).where(User.name == 'admin')).scalar())
+        # try to find the user, and check for correct password. Or if an error occurs (due to not finding any user) then flash error
+        try:
+            user = db.session.execute(db.select(User).where(User.name == form.username.data)).scalar()
+            if check_password_hash(user.password, form.password.data):
+                login_user(user)
+            else:
+                flash('Incorrect Username or Password')
+                return redirect(url_for('login_route'))
+        except AttributeError:
+            flash('Incorrect Username or Password')
+            return redirect(url_for('login_route'))
         return redirect(url_for('home'))
     else:
         return render_template('login.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
