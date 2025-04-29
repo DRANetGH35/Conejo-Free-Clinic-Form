@@ -145,6 +145,12 @@ def create_new_user():
     if not form.validate():
         return render_template('create_new_user.html', form=form, is_logged_in=is_logged_in(), errors=form.errors)
 
+    new_user = User(name=form.username.data,
+                    password=generate_password_hash(password=form.password.data, method='pdkdf2:sha256', salt_length=8),
+                    is_admin=form.is_admin.data)
+
+    db.session.add(new_user)
+    db.session.commit()
     print(f"new user: {form.username.data}\n{form.password.data}\n{form.is_admin.data}")
 
     return redirect(url_for('home'))
