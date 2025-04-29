@@ -44,8 +44,8 @@ def is_logged_in():
 
 #Returns True if there are any registered users (Only the admin user should exist)
 def admin_user_exists():
-    users = db.session.execute(db.select(User)).scalar()
-    if users:
+    user = db.session.execute(db.select(User).where(User.name == 'admin')).scalar()
+    if user:
         return True
     return False
 
@@ -65,6 +65,12 @@ def create_database():
     with app.app_context():
         db.create_all()
 
+def user_exists(username):
+    try:
+        if db.session.execute(db.select(User).where(User.name == username)).scalar():
+            return True
+    except AttributeError:
+        return False
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -162,17 +168,14 @@ def login_route():
     if request.method == 'POST':
         if not form.validate():
             return render_template('login.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
-        # try to find the user, and check for correct password. Or if an error occurs (due to not finding any user) then flash error
-        try:
-            user = db.session.execute(db.select(User).where(User.name == form.username.data)).scalar()
-            if check_password_hash(user.password, form.password.data):
-                login_user(user)
-            else:
-                flash('Incorrect Username or Password')
-                return redirect(url_for('login_route'))
-        except AttributeError:
-            flash('Incorrect Username or Password')
+        if not user_exists(form.username.data):
+            flash('Incorrect username or password')
             return redirect(url_for('login_route'))
+        user = db.session.execute(db.select(User).where(User.name == form.username.data)).scalar()
+        if not check_password_hash(user.password, form.password.data):
+            flash('Incorrect username or password')
+            return redirect(url_for('login_route'))
+        login_user(user)
         return redirect(url_for('home'))
     else:
         return render_template('login.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
