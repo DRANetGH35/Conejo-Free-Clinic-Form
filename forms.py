@@ -25,9 +25,9 @@ class LoginForm(FlaskForm):
         super().__init__(*args, **kwargs)
         self.stored_password = stored_password
 
-    def validate_password(self, field):
-        if not check_password_hash(pwhash=self.stored_password, password=field.data):
-            raise ValidationError('Passwords do not match')
+    #def validate_password(self, field):
+    #    if not check_password_hash(pwhash=self.stored_password, password=field.data):
+    #        raise ValidationError('Passwords do not match')
 
 
 
