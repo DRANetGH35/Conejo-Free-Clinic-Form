@@ -171,6 +171,10 @@ def create_new_user():
 
     return redirect(url_for('home'))
 
+@app.route("/profile/<int:id>")
+def profile(id):
+    user = db.session.execute(db.select(User).where(User.id == id)).scalar()
+    return render_template('profile.html', user_profile=user)
 
 @app.route('/statistics')
 @admin_only

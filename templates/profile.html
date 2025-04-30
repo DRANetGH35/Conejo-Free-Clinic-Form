@@ -1,0 +1,12 @@
+{% from "bootstrap5/form.html" import render_form %}
+{% extends "base.html" %} {% block content %}
+
+{% include 'navbar.html' %}
+
+<div class="custom-container">
+    <p>Username: {{ user_profile.name }}</p>
+    <p>Admin User: {{ user_profile.is_admin }}</p>
+    <p>Number of Entries: </p>
+</div>
+
+{% endblock %}
