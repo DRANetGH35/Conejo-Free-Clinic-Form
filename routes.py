@@ -94,9 +94,9 @@ def home():
 
     form = LoginForm(stored_password=db.session.execute(db.select(User).where(User.name == 'admin')).scalar().password)
     if request.method == 'GET':
-        return render_template("index.html", form=form, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
+        return render_template("index.html", form=form, current_user=current_user)
     if not form.validate():
-        return render_template('index.html', form=form, errors=form.errors, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
+        return render_template('index.html', form=form, errors=form.errors, current_user=current_user)
     login_user(db.session.execute(db.select(User).where(User.name == 'admin')).scalar())
     if form.change_password.data:
         return redirect(url_for('change_password'))
@@ -107,11 +107,11 @@ def home():
 def form():
     form = SubmissionForm()
     if request.method == 'GET':
-        return render_template('form_page.html', form=form, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin(), cities_in_california=cities_in_california())
+        return render_template('form_page.html', form=form, current_user=current_user, cities_in_california=cities_in_california())
     if not form.validate():
         for error in form.errors:
             flash(error)
-        return render_template('form_page.html', errors=form.errors, form=form, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin(), cities_in_california=cities_in_california())
+        return render_template('form_page.html', errors=form.errors, form=form, current_user=current_user, cities_in_california=cities_in_california())
     new_entry = Entry(age=form.age.data,
                       city_of_residence=form.city_of_residence.data,
                       zipcode=form.zipcode.data,
@@ -140,12 +140,12 @@ def form():
 def change_password():
     form = ChangePasswordForm()
     if request.method == 'GET':
-        return render_template('change_password.html', form=form, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
+        return render_template('change_password.html', form=form, current_user=current_user,)
     if not form.validate():
-        return render_template('change_password.html', form=form, errors=form.errors, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
+        return render_template('change_password.html', form=form, errors=form.errors, current_user=current_user,)
     if form.password.data != form.confirm_password.data:
         flash('Passwords do not match')
-        return render_template('change_password.html', form=form, errors=form.errors, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
+        return render_template('change_password.html', form=form, errors=form.errors, current_user=current_user,)
     user = db.session.execute(db.select(User).where(User.name == 'admin')).scalar()
     user.password = generate_password_hash(password=form.password.data, method='pbkdf2:sha256', salt_length=8)
     db.session.commit()
@@ -157,9 +157,9 @@ def change_password():
 def create_new_user():
     form = CreateNewUserForm()
     if request.method == 'GET':
-        return render_template('create_new_user.html', form=form, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
+        return render_template('create_new_user.html', form=form, current_user=current_user,)
     if not form.validate():
-        return render_template('create_new_user.html', form=form, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin(), errors=form.errors)
+        return render_template('create_new_user.html', form=form, current_user=current_user, errors=form.errors)
 
     new_user = User(name=form.username.data,
                     password=generate_password_hash(password=form.password.data, method='pbkdf2:sha256', salt_length=8),
@@ -176,7 +176,7 @@ def create_new_user():
 @admin_only
 def statistics():
     render_city_of_residence_plot()
-    return render_template('statistics.html', is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
+    return render_template('statistics.html', current_user=current_user,)
 
 @app.route('/reset', methods=['GET'])
 def reset():
@@ -191,7 +191,7 @@ def login_route():
     form = LoginForm()
     if request.method == 'POST':
         if not form.validate():
-            return render_template('login.html', form=form, errors=form.errors, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
+            return render_template('login.html', form=form, errors=form.errors, current_user=current_user,)
         if not user_exists(form.username.data):
             flash('Incorrect username or password')
             return redirect(url_for('login_route'))
@@ -202,7 +202,7 @@ def login_route():
         login_user(user)
         return redirect(url_for('home'))
     else:
-        return render_template('login.html', form=form, errors=form.errors, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
+        return render_template('login.html', form=form, errors=form.errors, current_user=current_user)
 
 @app.route('/logout')
 def logout():
@@ -212,17 +212,7 @@ def logout():
 
 @app.route('/test')
 def test():
-    conn = None
-    try:
-        conn = sqlite3.connect('instance/users.db')
-        query = "SELECT * FROM entry"
-        df = pd.read_sql(query, conn)
-        print(df.age.mean())
-    except sqlite3.Error as e:
-        return f"Database Error: {e}", 500
-    finally:
-        if conn:
-            conn.close()
+    print(current_user.is_authenticated)
     return redirect(url_for('home'))
 
 

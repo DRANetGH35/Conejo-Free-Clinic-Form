@@ -7,7 +7,7 @@
     <div class="image_container">
         <img src="static/ConejoFreeClinicLogo.png" alt="Logo" class="img-fluid">
     </div>
-    {% if is_logged_in %}
+    {% if current_user.is_authenticated %}
     <a class="active custom-btn btn btn-primary" href="{{ url_for('form') }}">Begin Form</a>
     {% else %}
     <a class="active custom-btn btn btn-primary" href="{{ url_for('login_route') }}">Login</a>

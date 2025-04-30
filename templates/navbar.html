@@ -7,12 +7,12 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                {% if is_logged_in %}
+                {% if current_user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link active navbar-btn" aria-current="page" href="/logout">Logout</a>
+                     <a class="nav-link active navbar-btn" aria-current="page" href="/logout">Logout</a>
                 </li>
                 {% endif %}
-                {% if is_admin %}
+                {% if current_user.is_admin %}
                 <li class="nav-item">
                     <a class="nav-link active navbar-btn" aria-current="page" href="/statistics">Statistics</a>
                 </li>
@@ -21,6 +21,12 @@
                 </li>
                 {% endif %}
 
+            </ul>
+
+             <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link navbar-btn" href="/profile">{{ current_user.name }}</a>
+                </li>
             </ul>
         </div>
     </div>
