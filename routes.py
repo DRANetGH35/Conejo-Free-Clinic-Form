@@ -1,6 +1,8 @@
 import csv
 import os
 import sqlite3
+from functools import wraps
+
 from flask import Flask, abort, render_template, redirect, url_for, flash, request
 from flask import current_app as app
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
@@ -72,6 +74,19 @@ def user_exists(username):
     except AttributeError:
         return False
 
+def logged_in_as_admin():
+    return is_logged_in() and current_user.is_admin == True
+
+def admin_only(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        #If id is not 1 then return abort with 403 error
+        if not logged_in_as_admin():
+            return abort(403)
+        #Otherwise continue with the route function
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if not admin_user_exists():
@@ -79,9 +94,9 @@ def home():
 
     form = LoginForm(stored_password=db.session.execute(db.select(User).where(User.name == 'admin')).scalar().password)
     if request.method == 'GET':
-        return render_template("index.html", form=form, is_logged_in=is_logged_in())
+        return render_template("index.html", form=form, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
     if not form.validate():
-        return render_template('index.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
+        return render_template('index.html', form=form, errors=form.errors, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
     login_user(db.session.execute(db.select(User).where(User.name == 'admin')).scalar())
     if form.change_password.data:
         return redirect(url_for('change_password'))
@@ -92,11 +107,11 @@ def home():
 def form():
     form = SubmissionForm()
     if request.method == 'GET':
-        return render_template('form_page.html', form=form, is_logged_in=is_logged_in(), cities_in_california=cities_in_california())
+        return render_template('form_page.html', form=form, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin(), cities_in_california=cities_in_california())
     if not form.validate():
         for error in form.errors:
             flash(error)
-        return render_template('form_page.html', errors=form.errors, form=form, is_logged_in=is_logged_in(), cities_in_california=cities_in_california())
+        return render_template('form_page.html', errors=form.errors, form=form, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin(), cities_in_california=cities_in_california())
     new_entry = Entry(age=form.age.data,
                       city_of_residence=form.city_of_residence.data,
                       zipcode=form.zipcode.data,
@@ -125,12 +140,12 @@ def form():
 def change_password():
     form = ChangePasswordForm()
     if request.method == 'GET':
-        return render_template('change_password.html', form=form, is_logged_in=is_logged_in())
+        return render_template('change_password.html', form=form, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
     if not form.validate():
-        return render_template('change_password.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
+        return render_template('change_password.html', form=form, errors=form.errors, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
     if form.password.data != form.confirm_password.data:
         flash('Passwords do not match')
-        return render_template('change_password.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
+        return render_template('change_password.html', form=form, errors=form.errors, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
     user = db.session.execute(db.select(User).where(User.name == 'admin')).scalar()
     user.password = generate_password_hash(password=form.password.data, method='pbkdf2:sha256', salt_length=8)
     db.session.commit()
@@ -138,15 +153,16 @@ def change_password():
     return redirect(url_for('home'))
 
 @app.route('/create_new_user', methods=['GET', 'POST'])
+@admin_only
 def create_new_user():
     form = CreateNewUserForm()
     if request.method == 'GET':
-        return render_template('create_new_user.html', form=form, is_logged_in=is_logged_in())
+        return render_template('create_new_user.html', form=form, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
     if not form.validate():
-        return render_template('create_new_user.html', form=form, is_logged_in=is_logged_in(), errors=form.errors)
+        return render_template('create_new_user.html', form=form, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin(), errors=form.errors)
 
     new_user = User(name=form.username.data,
-                    password=generate_password_hash(password=form.password.data, method='pdkdf2:sha256', salt_length=8),
+                    password=generate_password_hash(password=form.password.data, method='pbkdf2:sha256', salt_length=8),
                     is_admin=form.is_admin.data)
 
     db.session.add(new_user)
@@ -155,10 +171,12 @@ def create_new_user():
 
     return redirect(url_for('home'))
 
+
 @app.route('/statistics')
+@admin_only
 def statistics():
     render_city_of_residence_plot()
-    return render_template('statistics.html', is_logged_in=is_logged_in())
+    return render_template('statistics.html', is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
 
 @app.route('/reset', methods=['GET'])
 def reset():
@@ -173,7 +191,7 @@ def login_route():
     form = LoginForm()
     if request.method == 'POST':
         if not form.validate():
-            return render_template('login.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
+            return render_template('login.html', form=form, errors=form.errors, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
         if not user_exists(form.username.data):
             flash('Incorrect username or password')
             return redirect(url_for('login_route'))
@@ -184,7 +202,7 @@ def login_route():
         login_user(user)
         return redirect(url_for('home'))
     else:
-        return render_template('login.html', form=form, errors=form.errors, is_logged_in=is_logged_in())
+        return render_template('login.html', form=form, errors=form.errors, is_logged_in=is_logged_in(), is_admin=logged_in_as_admin())
 
 @app.route('/logout')
 def logout():
