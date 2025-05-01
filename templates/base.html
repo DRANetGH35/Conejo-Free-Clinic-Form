@@ -11,10 +11,20 @@
 </head>
 <style>
 
+
+
 html, body{
     height: 100%;
 }
-
+body.dark-mode{
+    background-color: #121212;
+    color: #f0f0f0;
+}
+a.dark-toggle {
+    cursor: pointer;
+    color: inherit;
+    text-decoration: underline;
+}
 .wrapper {
     display: flex;
     flex-direction: column;
@@ -31,7 +41,9 @@ footer {
     bottom: 0;
     width: 100%;
 }
-
+.custom-logo{
+    width: 25%;
+}
 .awesomplete mark {
     background-color: #cce5ff;
     color: #004085;
@@ -83,3 +95,16 @@ footer {
 {% endblock %}
 
 </html>
+
+<script>
+  const theme = localStorage.getItem('theme') || 'light';
+  document.body.setAttribute('data-bs-theme', theme);
+
+  document.getElementById('toggle-dark').addEventListener('click', function (e) {
+    e.preventDefault();
+    const currentTheme = document.body.getAttribute('data-bs-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-bs-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  });
+</script>
