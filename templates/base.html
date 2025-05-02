@@ -96,9 +96,16 @@ footer {
 
 </html>
 
+
 <script>
+  const image = document.getElementById('residence-image');
   const theme = localStorage.getItem('theme') || 'light';
   document.body.setAttribute('data-bs-theme', theme);
+
+  // Set image on load
+  if (theme === 'dark') {
+    image.src = "{{ url_for('static', filename='images/residence_dark.png') }}";
+  }
 
   document.getElementById('toggle-dark').addEventListener('click', function (e) {
     e.preventDefault();
@@ -106,5 +113,10 @@ footer {
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     document.body.setAttribute('data-bs-theme', newTheme);
     localStorage.setItem('theme', newTheme);
+
+    // Update image source
+    image.src = newTheme === 'dark'
+      ? "{{ url_for('static', filename='images/residence_dark.png') }}"
+      : "{{ url_for('static', filename='images/residence_light.png') }}";
   });
 </script>

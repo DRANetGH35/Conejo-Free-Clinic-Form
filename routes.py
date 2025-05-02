@@ -11,6 +11,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from cities import cities_in_california
 import socket
 from forms import LoginForm, SubmissionForm, ChangePasswordForm, CreateNewUserForm
+from graphs import render_city_of_residence_plot
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -20,26 +21,7 @@ from app import create_app
 
 app = create_app()
 
-def render_city_of_residence_plot():
-    conn = None
-    try:
-        conn = sqlite3.connect('instance/users.db')
-        query = "SELECT * FROM entry"
-        df = pd.read_sql(query, conn)
-        city_of_residence_df = df.groupby('city_of_residence').count().sort_values('age', ascending=False)
-        ax1 = plt.gca()
-        ax1.bar(city_of_residence_df.index, city_of_residence_df.age, color="blue", linewidth=.2, width=.2)
-        ax1.set_xlabel('city of residence')
-        plt.xticks(fontsize=10, rotation=90)
-        plt.grid(True)
-        plt.tight_layout()
-        plt.savefig('static/test.png')
 
-    except sqlite3.Error as e:
-        return f"Database Error: {e}", 500
-    finally:
-        if conn:
-            conn.close()
 def is_logged_in():
     if current_user.is_authenticated:
         return True
