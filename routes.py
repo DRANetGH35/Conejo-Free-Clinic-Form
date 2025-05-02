@@ -28,9 +28,10 @@ def render_city_of_residence_plot():
         df = pd.read_sql(query, conn)
         city_of_residence_df = df.groupby('city_of_residence').count().sort_values('age', ascending=False)
         ax1 = plt.gca()
-        ax1.bar(city_of_residence_df.index, city_of_residence_df.age, color="blue")
+        ax1.bar(city_of_residence_df.index, city_of_residence_df.age, color="blue", linewidth=.2, width=.2)
         ax1.set_xlabel('city of residence')
-        plt.xticks(fontsize=14, rotation=90)
+        plt.xticks(fontsize=10, rotation=90)
+        plt.grid(True)
         plt.tight_layout()
         plt.savefig('static/test.png')
 
