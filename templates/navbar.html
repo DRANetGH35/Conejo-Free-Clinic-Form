@@ -27,10 +27,11 @@
                  <li class="nav-item">
                      <a  class="nav-link dark-toggle nav-link" href="#" id="toggle-dark">Toggle Dark Mode</a>
                  </li>
+                 {% if current_user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link navbar-btn" href="/profile/{{ current_user.id }}">{{ current_user.name }}</a>
                 </li>
-
+                 {% endif %}
             </ul>
 
         </div>
