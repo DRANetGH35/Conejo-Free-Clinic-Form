@@ -3,7 +3,7 @@ import os
 import sqlite3
 from functools import wraps
 
-from flask import Flask, abort, render_template, redirect, url_for, flash, request
+from flask import Flask, abort, render_template, redirect, url_for, flash, request, send_file
 from flask import current_app as app
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from sqlalchemy import Integer, String, Text, select, Boolean, create_engine
@@ -162,8 +162,15 @@ def profile(id):
 @app.route('/statistics')
 @admin_only
 def statistics():
+    query = "SELECT * FROM entry"
+    df = pd.read_sql(query, db.engine)
+    df.to_excel('instance/db.xlsx', index=True)
     render_city_of_residence_plot()
     return render_template('statistics.html', current_user=current_user,)
+
+@app.route('/dl_to_excel')
+def dl_to_excel():
+    return redirect(url_for('statistics'))
 
 @app.route('/reset', methods=['GET'])
 def reset():
