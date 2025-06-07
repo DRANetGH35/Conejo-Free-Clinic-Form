@@ -64,8 +64,8 @@
                 {{ form.number_of_dependants(class="form-control") }}
             </div>
             <div class="col-md-6 mb-3">
-                {{ form.language.label }}
-                {{ form.language(class="form-select") }}
+                <label for="language">Language</label>
+                <input id="language" name="language" class="awesomplete form-control" data-list="{{ languages|join(', ') }}" value="{{form.language.data or '' }}"/>
             </div>
             <div class="col-md-6 mb-3">
                 {{ form.employment.label }}

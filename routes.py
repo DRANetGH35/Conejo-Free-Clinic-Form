@@ -8,7 +8,7 @@ from flask import current_app as app
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from sqlalchemy import Integer, String, Text, select, Boolean, create_engine
 from werkzeug.security import generate_password_hash, check_password_hash
-from cities import cities_in_california
+from data import cities_in_california, languages
 import socket
 from forms import LoginForm, SubmissionForm, ChangePasswordForm, CreateNewUserForm
 from graphs import render_city_of_residence_plot
@@ -90,11 +90,11 @@ def home():
 def form():
     form = SubmissionForm()
     if request.method == 'GET':
-        return render_template('form_page.html', form=form, current_user=current_user, cities_in_california=cities_in_california())
+        return render_template('form_page.html', form=form, current_user=current_user, cities_in_california=cities_in_california(), languages=languages())
     if not form.validate():
         for error in form.errors:
             flash(error)
-        return render_template('form_page.html', errors=form.errors, form=form, current_user=current_user, cities_in_california=cities_in_california())
+        return render_template('form_page.html', errors=form.errors, form=form, current_user=current_user, cities_in_california=cities_in_california(), languages=languages())
     new_entry = Entry(age=form.age.data,
                       city_of_residence=form.city_of_residence.data,
                       zipcode=form.zipcode.data,
@@ -206,7 +206,7 @@ def logout():
 
 @app.route('/test')
 def test():
-    print(current_user.is_authenticated)
+    print(languages())
     return redirect(url_for('home'))
 
 
