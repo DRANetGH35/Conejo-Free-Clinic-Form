@@ -93,6 +93,7 @@ def form():
         return render_template('form_page.html', form=form, current_user=current_user, cities_in_california=cities_in_california(), languages=languages())
     if not form.validate():
         for error in form.errors:
+            print(form.errors[error])
             flash(error)
         return render_template('form_page.html', errors=form.errors, form=form, current_user=current_user, cities_in_california=cities_in_california(), languages=languages())
     new_entry = Entry(age=form.age.data,

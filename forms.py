@@ -60,14 +60,16 @@ class SubmissionForm(FlaskForm):
     zipcode = IntegerField('Zipcode', validators=[DataRequired(), ensure_positive_number])
     referred_by = SelectField('Referred by', choices=[('Friend', 'Friend'),
                                                           ('Family', 'Family'),
-                                                          ('Other', 'Other')])
+                                                          ('Other', 'Other'),
+                                                          ('N/A', 'N/A'),])
 
     education = SelectField('Education', choices=[('Grade School', 'Grade School'),
                                                        ('Some High School', 'Some High School'),
                                                        ('GED', 'GED'),
                                                        ('Some College', 'Some College'),
                                                        ('College Degree', 'College Degree'),
-                                                       ('None', 'None')])
+                                                       ('None', 'None'),
+                                                       ('N/A', 'N/A'),])
 
     gender = SelectField("Gender", choices=[('Male', 'Male'),
                                                  ('Female', 'Female'),
@@ -84,25 +86,27 @@ class SubmissionForm(FlaskForm):
                                              ('Native American', 'Native American'),
                                              ('Pacific Islander', 'Pacific Islander'),
                                              ('Multi-racial', 'Multi-racial'),
-                                             ('Other', 'Other')])
+                                             ('Other', 'Other'),
+                                             ('N/A', 'N/A'),])
 
     housing = SelectField('Housing', choices=[('Apartment', 'Apartment'),
                                                    ('Public Shelter', 'Public Shelter'),
                                                    ('Near Homeless', 'Near Homeless'),
                                                    ('Private Home', 'Private Home'),
                                                    ('Car/Street Trailer','Car/Street Trailer'),
-                                                   ('Un-Housed', 'Un-Housed')])
+                                                   ('Un-Housed', 'Un-Housed'),
+                                                   ('N/A', 'N/A')])
     household_income = IntegerField('Household Income (Monthly)', validators=[DataRequired(), ensure_positive_number])
     number_of_dependants = IntegerField('Number of Dependents in Household', validators=[DataRequired(), ensure_positive_number])
-    language = SelectField('Language', choices=[('English', 'English'),
-                                                        ('Spanish', 'Spanish')])
+    language = StringField('Language')
     employment = SelectField('Employment', choices=[('Community', 'Community'),
                                                          ('Unemployed', 'Unemployed'),
                                                          ('Disabled', 'Disabled'),
                                                          ('Full-Time', 'Full-Time'),
                                                          ('Part-Time', 'Part-Time'),
                                                          ('Seasonal', 'Seasonal'),
-                                                         ('Student', 'Student')])
+                                                         ('Student', 'Student'),
+                                                         ('N/A', 'N/A'),])
     health_coverage = SelectField("Health Coverage", choices=[('Medicare without part B', 'Medicare without part B'),
                                                                     ('Private Insurance', 'Private Insurance'),
                                                                     ('Covered California', 'Covered California'),
@@ -110,7 +114,8 @@ class SubmissionForm(FlaskForm):
     hiv_status = SelectField('HIV Status', choices=[('N/A', 'N/A'),
                                                         ('HIV+', 'HIV+'),
                                                         ('HIV+, AIDS Status unknown', 'HIV+, AIDS Status unknown'),
-                                                        ('CDC-Defined AIDS', 'CDC-Defined AIDS')])
+                                                        ('CDC-Defined AIDS', 'CDC-Defined AIDS'),
+                                                        ('N/A', 'N/A'),])
     lgbtq_status = SelectField('Member of LGBTQ+', choices=[('Yes', 'Yes'),
                                                                 ('No', 'No'),
                                                                 ('Decline to answer', 'Decline to answer')])

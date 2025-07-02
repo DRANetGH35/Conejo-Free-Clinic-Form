@@ -12,7 +12,7 @@ def create_app():
         app.config['SECRET_KEY'] = file.readline().strip('\n')
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Time the user out after 30 minutes
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60)  # Time the user out after 30 minutes
 
     db.init_app(app)
     login_manager.init_app(app)
